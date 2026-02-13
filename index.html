@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Para ti ❤️</title>
+  <style>
+    :root { --bg1:#0f1020; --bg2:#1b1d3a; --card:#ffffff10; --txt:#fff; --accent:#ff4d6d; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      background: radial-gradient(1200px 800px at 20% 10%, #ff4d6d20, transparent 60%),
+                  radial-gradient(900px 600px at 90% 80%, #7c3aed25, transparent 55%),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:var(--txt); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      overflow:hidden;
+    }
+    .stars::before,.stars::after{
+      content:""; position:fixed; inset:-200px;
+      background-image: radial-gradient(#ffffff70 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: drift 30s linear infinite;
+      opacity:.35;
+      pointer-events:none;
+    }
+    .stars::after{ background-size: 70px 70px; opacity:.25; animation-duration: 55s; }
+    @keyframes drift { from{ transform:translateY(0)} to{ transform:translateY(200px)} }
+
+    .card{
+      width:min(560px,92vw);
+      padding:28px 22px;
+      background:var(--card);
+      border:1px solid #ffffff20;
+      border-radius:24px;
+      box-shadow: 0 20px 60px #00000055;
+      backdrop-filter: blur(10px);
+      position:relative;
+    }
+    h1{margin:0 0 8px; font-size:28px; letter-spacing:.2px}
+    p{margin:10px 0; line-height:1.45; color:#ffffffd0}
+    .badge{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:6px 10px; border-radius:999px;
+      background:#ffffff12; border:1px solid #ffffff1e;
+      font-size:13px; color:#ffffffd8; margin-bottom:12px;
+    }
+    .heart{
+      display:inline-block; animation:pulse 1.4s ease-in-out infinite;
+      filter: drop-shadow(0 6px 18px #ff4d6d55);
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+
+    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+    button,a.btn{
+      border:0; cursor:pointer;
+      padding:12px 14px; border-radius:14px;
+      font-weight:700; font-size:14px;
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+      text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .yes{ background: linear-gradient(135deg,var(--accent),#ff7a90); color:#16060a; }
+    .no{ background:#ffffff14; color:#fff; border:1px solid #ffffff22; }
+    button:hover,a.btn:hover{ transform: translateY(-1px); filter:brightness(1.05); }
+
+    .note{
+      margin-top:14px; font-size:13px; color:#ffffffb8;
+      border-top:1px solid #ffffff1a; padding-top:12px;
+    }
+    .small{font-size:12px; color:#ffffffa8}
+    .footer{margin-top:10px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <main class="card">
+    <div class="badge">💌 Mensaje secreto desbloqueado</div>
+
+    <h1>Para <span id="name">mi niña</span> <span class="heart">❤️</span></h1>
+
+    <p id="msg">
+      Hoy es San Valentín, pero yo te elijo los 364 días del año restantes cielo, eres única gubito, nunca cambies porque estoy enamoradísimo de ti.
+      Gracias por ser paz, risa y hogar baby, te amo.
+    </p>
+
+    <p><b>Pregunta importante:</b> ¿El año que viene repetimos este 14 juntos? </p>
+
+    <div class="btns">
+      <button class="yes" id="btnYes">Sí, obvio 😌</button>
+      <button class="no" id="btnNo">No (mentira) 🙃</button>
+      <a class="btn yes" id="btnKiss" href="#" aria-label="Beso">Reclamar beso 💋</a>
+    </div>
+
+    <div class="note" id="result" class="hidden"></div>
+
+    <div class="footer">
+      <span class="small" id="from">— De: Dani</span>
+      <span class="small" id="date"></span>
+    </div>
+  </main>
+
+  <script>
+    // Personaliza por URL: ?para=Lucia&de=Dani&msg=...
+    const q = new URLSearchParams(location.search);
+    const para = q.get("para");
+    const de = q.get("de");
+    const msg = q.get("msg");
+
+    if (para) document.getElementById("name").textContent = para;
+    if (de) document.getElementById("from").textContent = "— De: " + de;
+    if (msg) document.getElementById("msg").textContent = msg;
+
+    document.getElementById("date").textContent =
+      new Date().toLocaleDateString("es-ES", { year:"numeric", month:"long", day:"numeric" });
+
+    const res = document.getElementById("result");
+    const show = (html) => { res.classList.remove("hidden"); res.innerHTML = html; };
+
+    document.getElementById("btnYes").onclick = () => {
+      show("✅ <b>Aceptado.</b> Te debo 1 cena en Madrid + 1 abrazote + 1 beso robado. 😘");
+      confetti();
+    };
+
+    // El "No" se escapa un poco, en plan broma
+    const no = document.getElementById("btnNo");
+    let dodge = 0;
+    no.onmouseenter = () => {
+      dodge++;
+      const dx = (Math.random()*220 - 110);
+      const dy = (Math.random()*120 - 60);
+      no.style.transform = `translate(${dx}px, ${dy}px)`;
+      if (dodge > 5) show("🙃 <b>Y si dejas de intentar darle a no gubote? Gubo malo");
+    };
+
+    document.getElementById("btnKiss").onclick = (e) => {
+      e.preventDefault();
+      show("💋 <b>Beso reclamado.</b> Presenta este pantallazo como cupón oficial. 🧾");
+      confetti();
+    };
+
+    function confetti(){
+      // confeti ultra simple sin librerías
+      for(let i=0;i<80;i++){
+        const d=document.createElement("div");
+        d.style.position="fixed";
+        d.style.left=(Math.random()*100)+"vw";
+        d.style.top="-10px";
+        d.style.width="8px";
+        d.style.height="12px";
+        d.style.background=`hsl(${Math.random()*360},90%,70%)`;
+        d.style.opacity="0.9";
+        d.style.borderRadius="2px";
+        d.style.transform=`rotate(${Math.random()*360}deg)`;
+        d.style.zIndex="9999";
+        document.body.appendChild(d);
+        const fall= 900 + Math.random()*900;
+        const drift= (Math.random()*300-150);
+        d.animate([
+          { transform: d.style.transform, top:"-10px" },
+          { transform:`translateX(${drift}px) rotate(${Math.random()*720}deg)`, top: fall+"px" }
+        ],{ duration: 1400 + Math.random()*1000, easing:"cubic-bezier(.2,.7,.2,1)" });
+        setTimeout(()=>d.remove(), 2600);
+      }
+    }
+  </script>
+</body>
+</html>
